@@ -1,0 +1,215 @@
+openapi: 3.0.0
+info:
+  title: Task Management API
+  version: 1.0.0
+  description: API для управления задачами
+
+paths:
+  /v1/ping:
+    get:
+      summary: Проверка работоспособности сервера
+      responses:
+        '200':
+          description: Сервер работает
+
+  /v1/tasks:
+    post:
+      summary: Создание новой задачи
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  example: "Заголовок задачи"
+                description:
+                  type: string
+                  example: "Описание задачи"
+                completed:
+                  type: boolean
+                  example: false
+      responses:
+        '201':
+          description: Задача успешно создана
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+                  title:
+                    type: string
+                    example: "Заголовок задачи"
+                  description:
+                    type: string
+                    example: "Описание задачи"
+                  completed:
+                    type: boolean
+                    example: false
+        '400':
+          description: Неверный запрос
+        '500':
+          description: Внутренняя ошибка сервера
+
+    get:
+      summary: Получение списка задач
+      parameters:
+        - name: status
+          in: query
+          description: Статус задач (completed, not_completed)
+          required: false
+          schema:
+            type: string
+        - name: page
+          in: query
+          description: Номер страницы для пагинации
+          required: false
+          schema:
+            type: integer
+        - name: page_size
+          in: query
+          description: Размер страницы для пагинации
+          required: false
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Список задач успешно получен
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      example: 1
+                    title:
+                      type: string
+                      example: "Заголовок задачи"
+                    description:
+                      type: string
+                      example: "Описание задачи"
+                    completed:
+                      type: boolean
+                      example: false
+        '500':
+          description: Внутренняя ошибка сервера
+
+  /v1/tasks/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: ID задачи
+        schema:
+          type: integer
+
+    get:
+      summary: Получение задачи по ID
+      responses:
+        '200':
+          description: Задача успешно получена
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+                  title:
+                    type: string
+                    example: "Заголовок задачи"
+                  description:
+                    type: string
+                    example: "Описание задачи"
+                  completed:
+                    type: boolean
+                    example: false
+        '404':
+          description: Задача не найдена
+
+    put:
+      summary: Обновление задачи по ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+                            properties:
+                title:
+                  type: string
+                  example: "Обновленный заголовок задачи"
+                description:
+                  type: string
+                  example: "Обновленное описание задачи"
+                completed:
+                  type: boolean
+                  example: true
+      responses:
+        '204':
+          description: Задача успешно обновлена
+        '400':
+          description: Неверный запрос
+        '404':
+          description: Задача не найдена
+
+    delete:
+      summary: Удаление задачи по ID
+      responses:
+        '204':
+          description: Задача успешно удалена
+        '404':
+          description: Задача не найдена
+
+  /v1/tasks/date:
+    get:
+      summary: Получение задач по дате и статусу
+      parameters:
+        - name: date
+          in: query
+          required: true
+          description: Дата в формате YYYY-MM-DD
+          schema:
+            type: string
+            format: date
+        - name: status
+          in: query
+          description: Статус задач (completed, not_completed)
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Список задач по дате успешно получен
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      example: 1
+                    title:
+                      type: string
+                      example: "Заголовок задачи"
+                    description:
+                      type: string
+                      example: "Описание задачи"
+                    completed:
+                      type: boolean
+                      example: false
+        '400':
+          description: Неверный формат даты или неверный запрос 
+        '500':
+          description: Внутренняя ошибка сервера
